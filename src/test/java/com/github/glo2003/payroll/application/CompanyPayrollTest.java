@@ -1,5 +1,10 @@
-package com.github.glo2003.payroll;
+package com.github.glo2003.payroll.application;
 
+import com.github.glo2003.payroll.CompanyPayroll;
+import com.github.glo2003.payroll.Employee;
+import com.github.glo2003.payroll.HourlyEmployee;
+import com.github.glo2003.payroll.Paycheck;
+import com.github.glo2003.payroll.SalariedEmployee;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
