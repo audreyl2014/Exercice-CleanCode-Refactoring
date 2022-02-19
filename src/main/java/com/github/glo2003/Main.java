@@ -1,9 +1,9 @@
 package com.github.glo2003;
 
 import com.github.glo2003.payroll.CompanyPayroll;
-import com.github.glo2003.payroll.Employee;
-import com.github.glo2003.payroll.HourlyEmployee;
-import com.github.glo2003.payroll.SalariedEmployee;
+import com.github.glo2003.payroll.domain.Employee;
+import com.github.glo2003.payroll.domain.HourlyEmployee;
+import com.github.glo2003.payroll.domain.SalariedEmployee;
 
 public class Main {
 
@@ -16,11 +16,11 @@ public class Main {
         Employee e4 = new HourlyEmployee("Ernest", "intern", 1, 5, 50 * 4);
         Employee e5 = new HourlyEmployee("Fred", "intern", 1, 5, 50 * 4);
 
-        companyPayroll.addEmp(e1);
-        companyPayroll.addEmp(e2);
-        companyPayroll.addEmp(e3);
-        companyPayroll.addEmp(e4);
-        companyPayroll.addEmp(e5);
+        companyPayroll.addEmployee(e1);
+        companyPayroll.addEmployee(e2);
+        companyPayroll.addEmployee(e3);
+        companyPayroll.addEmployee(e4);
+        companyPayroll.addEmployee(e5);
 
         System.out.println("----- Listing employees -----");
         companyPayroll.listEmployees();

@@ -1,10 +1,10 @@
 package com.github.glo2003.payroll.application;
 
 import com.github.glo2003.payroll.CompanyPayroll;
-import com.github.glo2003.payroll.Employee;
-import com.github.glo2003.payroll.HourlyEmployee;
-import com.github.glo2003.payroll.Paycheck;
-import com.github.glo2003.payroll.SalariedEmployee;
+import com.github.glo2003.payroll.domain.Employee;
+import com.github.glo2003.payroll.domain.HourlyEmployee;
+import com.github.glo2003.payroll.domain.Paycheck;
+import com.github.glo2003.payroll.domain.SalariedEmployee;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class CompanyPayrollTest {
 
     @Test
     void createPendingsCreatesCorrectHourlyPaycheck() {
-        company.addEmp(hourlyEmployee);
+        company.addEmployee(hourlyEmployee);
 
         company.createPending();
 
@@ -60,7 +60,7 @@ class CompanyPayrollTest {
 
     @Test
     void createPendingsCreatesCorrectSalariedPaycheck() {
-        company.addEmp(salariedEmployee);
+        company.addEmployee(salariedEmployee);
 
         company.createPending();
 
@@ -71,11 +71,11 @@ class CompanyPayrollTest {
 
     @Test
     void processPending_shouldRemovePendingPaychecks() {
-        company.addEmp(vp);
-        company.addEmp(eng);
-        company.addEmp(manager);
-        company.addEmp(intern1);
-        company.addEmp(intern2);
+        company.addEmployee(vp);
+        company.addEmployee(eng);
+        company.addEmployee(manager);
+        company.addEmployee(intern1);
+        company.addEmployee(intern2);
         company.createPending();
 
         company.processPending();
@@ -85,44 +85,44 @@ class CompanyPayrollTest {
 
     @Test
     void findSWE_shouldReturnSoftwareEngineers() {
-        company.addEmp(eng);
+        company.addEmployee(eng);
 
-        List<Employee> es = company.findSWE();
+        List<Employee> es = company.findSoftwarEngineer();
         assertThat(es).containsExactly(eng);
     }
 
     @Test
     void findMgs_shouldReturnManagers() {
-        company.addEmp(manager);
+        company.addEmployee(manager);
 
-        List<Employee> es = company.findMgs();
+        List<Employee> es = company.findManagers();
         assertThat(es).containsExactly(manager);
     }
 
     @Test
     void find_Vice_Presidents_shouldReturnVicePresidents() {
-        company.addEmp(vp);
+        company.addEmployee(vp);
 
-        List<Employee> es = company.find_Vice_Presidents();
+        List<Employee> es = company.findVicePresidents();
         assertThat(es).containsExactly(vp);
     }
 
     @Test
     void find_interns_shouldReturnInterns() {
-        company.addEmp(intern1);
-        company.addEmp(intern2);
+        company.addEmployee(intern1);
+        company.addEmployee(intern2);
 
-        List<Employee> es = company.find_interns();
+        List<Employee> es = company.findInterns();
         assertThat(es).containsExactly(intern1, intern2);
     }
 
     @Test
     void createPending_shouldCreatePendingPaycheck() {
-        company.addEmp(vp);
-        company.addEmp(eng);
-        company.addEmp(manager);
-        company.addEmp(intern1);
-        company.addEmp(intern2);
+        company.addEmployee(vp);
+        company.addEmployee(eng);
+        company.addEmployee(manager);
+        company.addEmployee(intern1);
+        company.addEmployee(intern2);
 
         company.createPending();
 
@@ -131,11 +131,11 @@ class CompanyPayrollTest {
 
     @Test
     void hourlyEmployee() {
-        company.addEmp(vp);
-        company.addEmp(eng);
-        company.addEmp(manager);
-        company.addEmp(intern1);
-        company.addEmp(intern2);
+        company.addEmployee(vp);
+        company.addEmployee(eng);
+        company.addEmployee(manager);
+        company.addEmployee(intern1);
+        company.addEmployee(intern2);
 
         company.createPending();
 
@@ -144,7 +144,7 @@ class CompanyPayrollTest {
 
     @Test
     void hourlyRaiseShouldRaiseHourlySalary() {
-        company.addEmp(hourlyEmployee);
+        company.addEmployee(hourlyEmployee);
 
         company.salaryRaise(hourlyEmployee, RAISE);
 
@@ -155,7 +155,7 @@ class CompanyPayrollTest {
 
     @Test
     void salariedRaiseShouldRaiseMonthlySalary() {
-        company.addEmp(salariedEmployee);
+        company.addEmployee(salariedEmployee);
 
         company.salaryRaise(salariedEmployee, RAISE);
 
@@ -166,7 +166,7 @@ class CompanyPayrollTest {
 
     @Test
     void negativeRaiseShouldThrow() {
-        company.addEmp(eng);
+        company.addEmployee(eng);
 
         Assert.assertThrows(RuntimeException.class, () -> company.salaryRaise(eng, -1));
     }
@@ -178,54 +178,54 @@ class CompanyPayrollTest {
 
     @Test
     void salariedPayoutHolidays_paysOneWeek() {
-        company.addEmp(salariedEmployee);
+        company.addEmployee(salariedEmployee);
 
         company.takeHoliday(salariedEmployee, true, null);
 
         Paycheck pending = company.getPendings().get(0);
         assertThat(pending.getAmount()).isEqualTo(BIWEEKLY_AMOUNT / 2);
-        assertThat(salariedEmployee.getVacation_days()).isEqualTo(VACATION_DAYS - 5);
+        assertThat(salariedEmployee.getVacationDays()).isEqualTo(VACATION_DAYS - 5);
     }
 
 
     @Test
     void salariedHolidays_removesVacantionDays() {
-        company.addEmp(salariedEmployee);
+        company.addEmployee(salariedEmployee);
         int amount = 2;
 
         company.takeHoliday(salariedEmployee, false, amount);
 
         assertThat(company.getPendings()).hasSize(0);
-        assertThat(salariedEmployee.getVacation_days()).isEqualTo(VACATION_DAYS - amount);
+        assertThat(salariedEmployee.getVacationDays()).isEqualTo(VACATION_DAYS - amount);
     }
 
     @Test
     void hourlyPayoutHolidays_paysOneWeek() {
-        company.addEmp(hourlyEmployee);
+        company.addEmployee(hourlyEmployee);
 
         company.takeHoliday(hourlyEmployee, true, null);
 
         Paycheck pending = company.getPendings().get(0);
         assertThat(pending.getAmount()).isEqualTo(HOURLY_AMOUNT * HOURLY_RATE / 2f);
-        assertThat(hourlyEmployee.getVacation_days()).isEqualTo(VACATION_DAYS - 5);
+        assertThat(hourlyEmployee.getVacationDays()).isEqualTo(VACATION_DAYS - 5);
     }
 
 
     @Test
     void hourlyHolidays_removesVacantionDays() {
-        company.addEmp(hourlyEmployee);
+        company.addEmployee(hourlyEmployee);
         int amount = 2;
 
         company.takeHoliday(hourlyEmployee, false, amount);
 
         assertThat(company.getPendings()).hasSize(0);
-        assertThat(hourlyEmployee.getVacation_days()).isEqualTo(VACATION_DAYS - amount);
+        assertThat(hourlyEmployee.getVacationDays()).isEqualTo(VACATION_DAYS - amount);
     }
 
     @Test
     void avgPayCehck_pending() {
-        company.addEmp(salariedEmployee);
-        company.addEmp(anotherSalariedEmployee);
+        company.addEmployee(salariedEmployee);
+        company.addEmployee(anotherSalariedEmployee);
         company.createPending();
 
         float avg = company.avgPayCehck_pending();
@@ -235,8 +235,8 @@ class CompanyPayrollTest {
 
     @Test
     void getTotalmoney() {
-        company.addEmp(salariedEmployee);
-        company.addEmp(anotherSalariedEmployee);
+        company.addEmployee(salariedEmployee);
+        company.addEmployee(anotherSalariedEmployee);
         company.createPending();
 
         float t = company.getTotalmoney();
@@ -246,11 +246,11 @@ class CompanyPayrollTest {
 
     @Test
     void getNumEholidaysShouldReturnZeroWhenEveryoneWorks() {
-        company.addEmp(vp);
-        company.addEmp(eng);
-        company.addEmp(manager);
-        company.addEmp(intern1);
-        company.addEmp(intern2);
+        company.addEmployee(vp);
+        company.addEmployee(eng);
+        company.addEmployee(manager);
+        company.addEmployee(intern1);
+        company.addEmployee(intern2);
 
         int x = company.getNumEholidays();
 
@@ -259,11 +259,11 @@ class CompanyPayrollTest {
 
     @Test
     void getNumEholidaysShouldReturnNumberOfPeopleInHolidays() {
-        company.addEmp(vp);
-        company.addEmp(eng);
-        company.addEmp(manager);
-        company.addEmp(intern1);
-        company.addEmp(intern2);
+        company.addEmployee(vp);
+        company.addEmployee(eng);
+        company.addEmployee(manager);
+        company.addEmployee(intern1);
+        company.addEmployee(intern2);
 
         company.takeHoliday(vp, false, 2);
         company.takeHoliday(vp, false, 2);
