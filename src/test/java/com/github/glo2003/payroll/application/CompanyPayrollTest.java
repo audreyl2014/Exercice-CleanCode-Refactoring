@@ -178,7 +178,7 @@ class CompanyPayrollTest {
     void cannotGiveRaiseIfNotInCompany() {
         Assert.assertThrows(RuntimeException.class, () -> company.salaryRaise(eng, 10));
     }
-    @Disabled
+
     @Test
     void salariedPayoutHolidays_paysOneWeek()
         throws NotEnoughDayException, EmployeeNotFoundException {
@@ -213,7 +213,7 @@ class CompanyPayrollTest {
         assertThat(hourlyEmployee.getVacationDays()).isEqualTo(VACATION_DAYS - 5);
     }
 
-    @Disabled
+
     @Test
     void hourlyHolidays_removesVacantionDays() throws Exception {
         company.addEmployee(hourlyEmployee);
@@ -242,7 +242,7 @@ class CompanyPayrollTest {
         company.addEmployee(anotherSalariedEmployee);
         company.createPending();
 
-        float t = company.getTotalmoney();
+        float t = company.getTotalMoney();
 
         assertThat(t).isEqualTo(BIWEEKLY_AMOUNT + ANOTHER_MONTHLY_AMOUNT);
     }
@@ -255,11 +255,11 @@ class CompanyPayrollTest {
         company.addEmployee(intern1);
         company.addEmployee(intern2);
 
-        int x = company.getNumEholidays();
+        int x = company.getTotalHolidays();
 
         assertThat(x).isEqualTo(0);
     }
-    @Disabled
+
     @Test
     void getNumEholidaysShouldReturnNumberOfPeopleInHolidays() throws Exception {
         company.addEmployee(vp);
@@ -273,7 +273,7 @@ class CompanyPayrollTest {
         company.takeHoliday(eng,2);
         company.takeHoliday(manager,2);
 
-        int x = company.getNumEholidays();
+        int x = company.getTotalHolidays();
         assertThat(x).isEqualTo(3);
     }
 }

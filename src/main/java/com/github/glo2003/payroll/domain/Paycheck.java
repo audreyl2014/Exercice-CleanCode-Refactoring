@@ -7,7 +7,7 @@ public class Paycheck {
 
     public Paycheck(String name) {
         this.toEmployee = name;
-        this.amount = amount;
+        this.amount = 0;
         this.isPending = false;
     }
 
@@ -29,9 +29,9 @@ public class Paycheck {
 
     public void process() {
         if(this.isPending){
-            System.out.println("Sending" + this.amount + "$ to " + toEmployee);
+            System.out.println("Sending " + this.amount + "$ to " + toEmployee);
         }
-        resetIsPacheck();
+        resetIsPending();
     }
 
     public void createPending(Float amount) {
@@ -39,7 +39,7 @@ public class Paycheck {
         this.isPending = true;
     }
 
-    public void resetIsPacheck() {
+    public void resetIsPending() {
         setIsPending(false);
         this.amount = 0;
     }

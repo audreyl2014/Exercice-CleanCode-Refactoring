@@ -1,6 +1,5 @@
 package com.github.glo2003;
 
-import com.github.glo2003.payroll.Exceptions.NotEnoughDayException;
 import com.github.glo2003.payroll.application.CompanyPayroll;
 import com.github.glo2003.payroll.domain.Employee;
 import com.github.glo2003.payroll.domain.HourlyEmployee;
@@ -28,20 +27,20 @@ public class Main {
         companyPayroll.listEmployees();
 
         System.out.println("----- Giving raises -----");
-        companyPayroll.salaryRaise(e1, 10);
-        companyPayroll.salaryRaise(e2, 100);
+       // companyPayroll.salaryRaise(e1, 10);
+        //companyPayroll.salaryRaise(e2, 100);
 
         System.out.println("\n----- Holidays -----");
         companyPayroll.takesPayedHoliday(e1);
-        companyPayroll.takeHoliday(e2,10);
-        companyPayroll.takesPayedHoliday(e3);
-        System.out.println("Number of employees in holidays: " + companyPayroll.getNumEholidays());
+        //companyPayroll.takeHoliday(e2,10);
+        //companyPayroll.takesPayedHoliday(e3);
+        System.out.println("Number of employees in holidays: " + companyPayroll.getTotalHolidays());
 
         System.out.println("\n----- Create paychecks -----");
         companyPayroll.createPending();
 
         System.out.println("\n----- Pay statistics -----");
-        float t = companyPayroll.getTotalmoney();
+        float t = companyPayroll.getTotalMoney();
         System.out.println("Total money spent: ");
         float avg = companyPayroll.avgPaycheckPending();
         System.out.println("Average paycheck: " + avg);

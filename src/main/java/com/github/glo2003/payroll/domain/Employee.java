@@ -3,9 +3,9 @@ package com.github.glo2003.payroll.domain;
 import com.github.glo2003.payroll.Exceptions.NotEnoughDayException;
 
 public abstract class Employee {
-    protected static final int DAYS_PAYEDOUT = 5;
-    private String name;
-    private RoleType role;
+    protected static final int DAYS_PAYOUT = 5;
+    private final String name;
+    private final RoleType role;
     private int vacationDays;
     protected Paycheck paycheck;
     protected Holiday holiday;
@@ -28,9 +28,9 @@ public abstract class Employee {
         return role;
     }
 
-    public int getVacationDays() {
-        return vacationDays;
-    }
+    public int getVacationDays() { return vacationDays; }
+
+    public  int getHolidays() { return this.holiday.getNumberOfDays(); }
 
     public void setVacationDays(int vacationDays) {
         this.vacationDays = vacationDays;
@@ -47,9 +47,9 @@ public abstract class Employee {
     public void processPaycheck() { this.paycheck.process(); }
 
     public void takesPayedHoliday() throws NotEnoughDayException {
-        vacationDaysValidation(DAYS_PAYEDOUT);
+        vacationDaysValidation(DAYS_PAYOUT);
         this.holiday.setPayedOutHoliday();
-        this.holiday.set(DAYS_PAYEDOUT);
+        this.holiday.set(DAYS_PAYOUT);
         this.createPaycheck();
     }
 
@@ -59,6 +59,12 @@ public abstract class Employee {
         this.createPaycheck();
     }
 
+    private void vacationDaysValidation(Integer numberOfDays) throws NotEnoughDayException {
+        if(this.vacationDays < numberOfDays){
+            throw new NotEnoughDayException(this.name);
+        }
+    }
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -66,11 +72,5 @@ public abstract class Employee {
                 ", role='" + role + '\'' +
                 ", vacation_days=" + vacationDays +
                 '}';
-    }
-
-    private void vacationDaysValidation(Integer numberOfDays) throws NotEnoughDayException {
-        if(this.vacationDays < numberOfDays){
-            throw new NotEnoughDayException(this.name);
-        }
     }
 }

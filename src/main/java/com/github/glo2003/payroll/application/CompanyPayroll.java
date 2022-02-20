@@ -15,54 +15,13 @@ import java.util.List;
 
 public class CompanyPayroll {
 final private List<Employee> employees;
-private EmployeeRepo employeeRepo;
-private ListEmployeeService listEmployeeService;
-private List<Paycheck> paychecks;
-private List<Boolean> holidays;
+private final EmployeeRepo employeeRepo;
+private final ListEmployeeService listEmployeeService;
 
     public CompanyPayroll() {
         this.employees = new ArrayList<>();
-        this.paychecks = new ArrayList<>();
-        this.holidays = new ArrayList<>();
         employeeRepo = new EmployeeRepoInMemory();
         listEmployeeService = new ListEmployeeService(employeeRepo);
-    }
-
-    public void processPending() {
-        employeeRepo.findAll().forEach(Employee::processPaycheck);
-    }
-
-    public void createPending() {
-        employeeRepo.findAll().forEach(Employee::createPaycheck);
-    }
-
-    public List<Paycheck> getPending() {
-        //createPending();
-        List<Paycheck> pendingPaychecks = new ArrayList<>();
-        this.employeeRepo.findAll().stream().forEach(employee -> {
-            if(employee.paycheckIsPending()){
-                pendingPaychecks.add(employee.getPaycheck());
-            }
-        });
-        return pendingPaychecks;
-    }
-
-    public void takesPayedHoliday(Employee employee)
-        throws NotEnoughDayException, EmployeeNotFoundException {
-        //validateEmployee(employee);
-        employee.takesPayedHoliday();
-    }
-    public void takeHoliday(Employee employee, Integer amount)
-        throws NotEnoughDayException, EmployeeNotFoundException {
-        validateEmployee(employee);
-        employee.takesHoliday(amount);
-        //employee.createPaycheck();
-    }
-
-    public void validateEmployee(Employee employee) throws EmployeeNotFoundException {
-        if (!employeeRepo.isPresent(employee)) {
-            throw new EmployeeNotFoundException();
-        }
     }
 
     public void addEmployee(Employee employee) {
@@ -73,9 +32,7 @@ private List<Boolean> holidays;
         listEmployeeService.listAllEmployee();
     }
 
-    public List<Employee> findVicePresidents() {
-        return employeeRepo.findBy(RoleType.VICE_PRESIDENT);
-    }
+    public List<Employee> findVicePresidents() { return employeeRepo.findBy(RoleType.VICE_PRESIDENT); }
 
     public List<Employee> findManagers() {
         return employeeRepo.findBy(RoleType.MANAGER);
@@ -89,10 +46,60 @@ private List<Boolean> holidays;
         return employeeRepo.findBy(RoleType.INTERN);
     }
 
-    public void salaryRaise(Employee e, float raise) {
+    public void processPending() { employeeRepo.findAll().forEach(Employee::processPaycheck); }
+
+    public void createPending() { employeeRepo.findAll().forEach(Employee::createPaycheck); }
+
+    public List<Paycheck> getPending() {
+        List<Paycheck> pendingPaychecks = new ArrayList<>();
+        this.employeeRepo.findAll().forEach(employee -> {
+            if(employee.paycheckIsPending()){
+                pendingPaychecks.add(employee.getPaycheck());
+            }
+        });
+        return pendingPaychecks;
+    }
+
+    public float avgPaycheckPending() {
+        float out_float;
+        float t_float = getTotalMoney();
+        out_float = t_float / this.employeeRepo.findAll().size();
+        return out_float;
+    }
+
+    public void takesPayedHoliday(Employee employee)
+        throws NotEnoughDayException, EmployeeNotFoundException {
+        validateEmployee(employee);
+        employee.takesPayedHoliday();
+    }
+    public void takeHoliday(Employee employee, Integer amount)
+        throws NotEnoughDayException, EmployeeNotFoundException {
+        validateEmployee(employee);
+        employee.takesHoliday(amount);
+    }
+
+    public void validateEmployee(Employee employee) throws EmployeeNotFoundException {
+        if (!employeeRepo.isPresent(employee)) {
+            throw new EmployeeNotFoundException();
+        }
+    }
+
+    public int getTotalHolidays() { //todo change pour count() on veut le nombre de personne
+        return employeeRepo.findAll().stream().mapToInt(Employee::getHolidays).sum();
+    }
+
+    public float getTotalMoney() {
+        List<Paycheck> paychecks = new ArrayList<>();
+        this.employeeRepo.findAll().forEach(employee -> {
+            paychecks.add(employee.getPaycheck());
+        });
+        return (float) paychecks.stream().mapToDouble(Paycheck::getAmount).sum();
+    }
+
+    public void salaryRaise(Employee e, float raise) { //todo a compléter
         if (raise > 0); // was this before bug#1029582920
         if (raise < 0) { // if raise < 0, error
-        throw new RuntimeException("oh no");
+            throw new RuntimeException("oh no");
         }
         if (!this.employees.contains(e)) {
             throw new RuntimeException("not here");
@@ -100,41 +107,12 @@ private List<Boolean> holidays;
         for (Employee e1 : employees);
         if (e instanceof HourlyEmployee) {
             HourlyEmployee he = (HourlyEmployee) e;
-        he.setWagePerHour(he.getWagePerHour() + raise);
+            he.setWagePerHour(he.getWagePerHour() + raise);
         } else if (e instanceof SalariedEmployee) {
             SalariedEmployee se = (SalariedEmployee) e;
             se.setBiweeklyIncomes(se.getBiweeklyIncomes() + raise);
         } else {
             throw new RuntimeException("something happened");
         }
-    }
-
-    ///Statistics
-    public float avgPaycheckPending() {
-        List<Paycheck> pendingPaychecks = getPending();
-        float out_float = (float) pendingPaychecks.stream().mapToDouble(p -> p.getAmount()).sum();
-
-        /*if (this.paychecks.size() == 0) {
-            return -1f;
-        }*/
-        float t_float = getTotalmoney();
-           out_float = t_float / this.employeeRepo.findAll().size();
-        return out_float;
-    }
-
-    public int getNumEholidays() {
-        int i_int = 0;
-        for (int ii_int = 0; ii_int < holidays.size(); ++ii_int) {
-            if (this.holidays.get(ii_int)) i_int++;
-        }
-        return i_int;
-    }
-
-    public float getTotalmoney() {
-        List<Paycheck> paychecks = new ArrayList<>();
-        this.employeeRepo.findAll().stream().forEach(employee -> {
-            paychecks.add(employee.getPaycheck());
-        });
-        return (float) paychecks.stream().mapToDouble(p -> p.getAmount()).sum();
     }
 }

@@ -6,7 +6,7 @@ public class Holiday {
 	protected Boolean isTakingHoliday;
 
 	public Holiday() {
-		this.numberOfDays = null;
+		this.numberOfDays = 0;
 		this.payout = false;
 		this.isTakingHoliday = false;
 	}

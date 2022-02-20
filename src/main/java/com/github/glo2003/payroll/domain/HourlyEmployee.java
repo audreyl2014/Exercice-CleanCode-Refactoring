@@ -2,7 +2,7 @@ package com.github.glo2003.payroll.domain;
 
 public class HourlyEmployee extends Employee {
     private float wagePerHour;
-    private float hoursForTwoWorkedWeeks;
+    private final float hoursForTwoWorkedWeeks;
 
     public HourlyEmployee(String name, RoleType role, int vacationDays, float wagePerHour, float hoursForTwoWorkedWeeks) {
         super(name, role, vacationDays);
@@ -12,10 +12,6 @@ public class HourlyEmployee extends Employee {
 
     public float getWagePerHour() {
         return wagePerHour;
-    }
-
-    public float getHoursForTwoWorkedWeeks() {
-        return hoursForTwoWorkedWeeks;
     }
 
     public void setWagePerHour(float wagePerHour) {
