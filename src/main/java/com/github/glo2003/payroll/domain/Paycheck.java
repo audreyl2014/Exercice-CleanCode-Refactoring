@@ -1,18 +1,22 @@
 package com.github.glo2003.payroll.domain;
 
 public class Paycheck {
-    private String to; //todo enlever?
+    private final String toEmployee;
     private float amount;
-    protected Boolean isPending;
+    private Boolean isPending;
 
     public Paycheck(String name) {
-        this.to = name;
+        this.toEmployee = name;
         this.amount = amount;
         this.isPending = false;
     }
 
-    public String getTo() {
-        return to;
+    public Boolean isPending() {
+        return isPending;
+    }
+
+    public String getToEmployee() {
+        return toEmployee;
     }
 
     public float getAmount() {
@@ -23,17 +27,20 @@ public class Paycheck {
         this.isPending = isPending;
     }
 
-    public void resetIsPending() {
-        setIsPending(false);
-        this.amount = 0;
+    public void process() {
+        if(this.isPending){
+            System.out.println("Sending" + this.amount + "$ to " + toEmployee);
         }
+        resetIsPacheck();
+    }
 
     public void createPending(Float amount) {
         this.amount = amount;
         this.isPending = true;
     }
 
-    public Boolean isPending() {
-        return isPending;
+    public void resetIsPacheck() {
+        setIsPending(false);
+        this.amount = 0;
     }
 }

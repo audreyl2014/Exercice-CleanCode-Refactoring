@@ -1,41 +1,32 @@
 package com.github.glo2003.payroll.domain;
 
 public class SalariedEmployee extends Employee {
-    private float biweekly;
+    private float biweeklyIncomes;
 
-    public SalariedEmployee(String name, String role, int vacationDays, float biweekly) {
+    public SalariedEmployee(String name, RoleType role, int vacationDays, float biweeklyIncomes) {
         super(name, role, vacationDays);
-        this.biweekly = biweekly;
+        this.biweeklyIncomes = biweeklyIncomes;
     }
 
-    public float getBiweekly() {
-        return biweekly;
+    public float getBiweeklyIncomes() {
+        return biweeklyIncomes;
     }
 
-    public void setBiweekly(float biweekly) {
-        this.biweekly = biweekly;
+    public void setBiweeklyIncomes(float biweeklyIncomes) {
+        this.biweeklyIncomes = biweeklyIncomes;
     }
 
     @Override
     public void createPaycheck() {
-        //todo add error (dans super?)
-        /*if (!payout && e.getVacationDays() < amount) { // cannot
-            throw new RuntimeException("error");
-        }*/
         if(!this.holiday.isTakingHoliday) {
-            this.paycheck.createPending(this.biweekly);
+            this.paycheck.createPending(this.biweeklyIncomes);
         }else if(this.holiday.isPayout()) {
-            this.paycheck.createPending(this.biweekly / 2f);
-            this.setVacationDays(this.getVacationDays() - this.holiday.getAmount());
+            this.paycheck.createPending(this.biweeklyIncomes / 2f);
+            this.setVacationDays(this.getVacationDays() - this.holiday.getNumberOfDays());
         }else {
-            this.setVacationDays(this.getVacationDays() - this.holiday.getAmount());
+            this.setVacationDays(this.getVacationDays() - this.holiday.getNumberOfDays());
         }
     }
-
-   /* @Override
-    public void takesHoliday(Boolean payout, Integer amount) {
-
-    }*/
 
     @Override
     public String toString() {
@@ -43,7 +34,7 @@ public class SalariedEmployee extends Employee {
                 "name='" + this.getName() + '\'' +
                 ", role='" + this.getRole() + '\'' +
                 ", vacation_days=" + this.getVacationDays() +
-                ", monthly=" + biweekly +
+                ", monthly=" + biweeklyIncomes +
                 '}';
     }
 }

@@ -2,6 +2,7 @@ package com.github.glo2003.payroll.infrastructure;
 
 import com.github.glo2003.payroll.domain.Employee;
 import com.github.glo2003.payroll.domain.EmployeeRepo;
+import com.github.glo2003.payroll.domain.RoleType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class EmployeeRepoInMemory implements EmployeeRepo {
 	}
 
 	@Override
-	public List<Employee> findBy(String role) {
+	public List<Employee> findBy(RoleType role) {
 		List<Employee> employeesByRole = new ArrayList<>();
 		this.employees.forEach(employee -> {
 			if(employee.getRole().equals(role)){

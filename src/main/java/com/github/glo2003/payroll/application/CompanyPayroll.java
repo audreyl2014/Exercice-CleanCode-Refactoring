@@ -1,26 +1,25 @@
-package com.github.glo2003.payroll;
+package com.github.glo2003.payroll.application;
 
+import com.github.glo2003.payroll.Exceptions.EmployeeNotFoundException;
+import com.github.glo2003.payroll.Exceptions.NotEnoughDayException;
 import com.github.glo2003.payroll.domain.Employee;
 import com.github.glo2003.payroll.domain.EmployeeRepo;
 import com.github.glo2003.payroll.domain.HourlyEmployee;
 import com.github.glo2003.payroll.domain.Paycheck;
+import com.github.glo2003.payroll.domain.RoleType;
 import com.github.glo2003.payroll.domain.SalariedEmployee;
 import com.github.glo2003.payroll.infrastructure.EmployeeRepoInMemory;
 import com.github.glo2003.payroll.service.ListEmployeeService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-//// Company class
 public class CompanyPayroll {
 final private List<Employee> employees;
 private EmployeeRepo employeeRepo;
 private ListEmployeeService listEmployeeService;
 private List<Paycheck> paychecks;
-private List<Boolean> holidays; // who takes holidays
-    // end private attributes
+private List<Boolean> holidays;
 
-    //  constructor
     public CompanyPayroll() {
         this.employees = new ArrayList<>();
         this.paychecks = new ArrayList<>();
@@ -37,22 +36,33 @@ private List<Boolean> holidays; // who takes holidays
         employeeRepo.findAll().forEach(Employee::createPaycheck);
     }
 
-    public List<Paycheck> getPendings() {
-        List<Paycheck> paychecks = new ArrayList<>();
+    public List<Paycheck> getPending() {
+        //createPending();
+        List<Paycheck> pendingPaychecks = new ArrayList<>();
         this.employeeRepo.findAll().stream().forEach(employee -> {
-            if(employee.pacheckIsPending()){
-                paychecks.add(employee.getPaycheck());
+            if(employee.paycheckIsPending()){
+                pendingPaychecks.add(employee.getPaycheck());
             }
         });
-        return paychecks;
+        return pendingPaychecks;
     }
 
-    public void takeHoliday(Employee employee, boolean payout, Integer amount) {
+    public void takesPayedHoliday(Employee employee)
+        throws NotEnoughDayException, EmployeeNotFoundException {
+        //validateEmployee(employee);
+        employee.takesPayedHoliday();
+    }
+    public void takeHoliday(Employee employee, Integer amount)
+        throws NotEnoughDayException, EmployeeNotFoundException {
+        validateEmployee(employee);
+        employee.takesHoliday(amount);
+        //employee.createPaycheck();
+    }
+
+    public void validateEmployee(Employee employee) throws EmployeeNotFoundException {
         if (!employeeRepo.isPresent(employee)) {
-            throw new RuntimeException("not here");
+            throw new EmployeeNotFoundException();
         }
-        employee.takesHoliday(payout, amount);
-        employee.createPaycheck();
     }
 
     public void addEmployee(Employee employee) {
@@ -60,23 +70,23 @@ private List<Boolean> holidays; // who takes holidays
     }
 
     public void listEmployees() {
-        listEmployeeService.all();
+        listEmployeeService.listAllEmployee();
     }
 
     public List<Employee> findVicePresidents() {
-        return employeeRepo.findBy("vp");
+        return employeeRepo.findBy(RoleType.VICE_PRESIDENT);
     }
 
     public List<Employee> findManagers() {
-        return employeeRepo.findBy("manager");
+        return employeeRepo.findBy(RoleType.MANAGER);
     }
 
-    public List<Employee> findSoftwareEngineer() {
-        return employeeRepo.findBy("engineer");
+    public List<Employee> findEngineer() {
+        return employeeRepo.findBy(RoleType.ENGINEER);
     }
 
     public List<Employee> findInterns() {
-        return employeeRepo.findBy("intern");
+        return employeeRepo.findBy(RoleType.INTERN);
     }
 
     public void salaryRaise(Employee e, float raise) {
@@ -90,10 +100,10 @@ private List<Boolean> holidays; // who takes holidays
         for (Employee e1 : employees);
         if (e instanceof HourlyEmployee) {
             HourlyEmployee he = (HourlyEmployee) e;
-        he.setRate(he.getRate() + raise);
+        he.setWagePerHour(he.getWagePerHour() + raise);
         } else if (e instanceof SalariedEmployee) {
             SalariedEmployee se = (SalariedEmployee) e;
-            se.setBiweekly(se.getBiweekly() + raise);
+            se.setBiweeklyIncomes(se.getBiweeklyIncomes() + raise);
         } else {
             throw new RuntimeException("something happened");
         }
@@ -101,7 +111,7 @@ private List<Boolean> holidays; // who takes holidays
 
     ///Statistics
     public float avgPaycheckPending() {
-        List<Paycheck> pendingPaychecks = getPendings();
+        List<Paycheck> pendingPaychecks = getPending();
         float out_float = (float) pendingPaychecks.stream().mapToDouble(p -> p.getAmount()).sum();
 
         /*if (this.paychecks.size() == 0) {

@@ -1,41 +1,36 @@
 package com.github.glo2003.payroll.domain;
 
 public class HourlyEmployee extends Employee {
-    private float rate;
-    private float amount;
+    private float wagePerHour;
+    private float hoursForTwoWorkedWeeks;
 
-    public HourlyEmployee(String name, String role, int vacationDays, float rate, float amount) {
+    public HourlyEmployee(String name, RoleType role, int vacationDays, float wagePerHour, float hoursForTwoWorkedWeeks) {
         super(name, role, vacationDays);
-        this.rate = rate;
-        this.amount = amount;
+        this.wagePerHour = wagePerHour;
+        this.hoursForTwoWorkedWeeks = hoursForTwoWorkedWeeks;
     }
 
-    public float getRate() {
-        return rate;
+    public float getWagePerHour() {
+        return wagePerHour;
     }
 
-    public float getAmount() {
-        return amount;
+    public float getHoursForTwoWorkedWeeks() {
+        return hoursForTwoWorkedWeeks;
     }
 
-    public void setRate(float rate) {
-        this.rate = rate;
+    public void setWagePerHour(float wagePerHour) {
+        this.wagePerHour = wagePerHour;
     }
 
     @Override
     public void createPaycheck() {
-        //todo add error (dans super?)
-        /*if (!payout && e.getVacationDays() < amount) { // cannot
-            throw new RuntimeException("error");
-        }*/
-       // if(this.pacheckIsPending()) { return;}
         if(!this.holiday.isTakingHoliday) {
-            this.paycheck.createPending(this.amount * this.rate);
+            this.paycheck.createPending(this.hoursForTwoWorkedWeeks * this.wagePerHour);
         }else if(this.holiday.isPayout()) {
-            this.paycheck.createPending(this.holiday.getAmount() * this.rate / 2f);
-            this.setVacationDays(this.getVacationDays() - this.holiday.getAmount());
+            this.paycheck.createPending(this.hoursForTwoWorkedWeeks * this.wagePerHour / 2f);
+            this.setVacationDays(this.getVacationDays() - this.holiday.getNumberOfDays());
         }else {
-            this.setVacationDays(this.getVacationDays() - this.holiday.getAmount());
+            this.setVacationDays(this.getVacationDays() - this.holiday.getNumberOfDays());
         }
     }
 
@@ -45,8 +40,8 @@ public class HourlyEmployee extends Employee {
                 "name='" + this.getName() + '\'' +
                 ", role='" + this.getRole() + '\'' +
                 ", vacation_days=" + this.getVacationDays() +
-                ", hourlyRate=" + rate +
-                ", amount=" + amount +
+                ", hourlyRate=" + wagePerHour +
+                ", amount=" + hoursForTwoWorkedWeeks +
                 '}';
     }
 }

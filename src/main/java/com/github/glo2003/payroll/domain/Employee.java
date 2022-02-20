@@ -1,16 +1,16 @@
 package com.github.glo2003.payroll.domain;
 
-
-import java.util.Optional;
+import com.github.glo2003.payroll.Exceptions.NotEnoughDayException;
 
 public abstract class Employee {
+    protected static final int DAYS_PAYEDOUT = 5;
     private String name;
-    private String role;
+    private RoleType role;
     private int vacationDays;
     protected Paycheck paycheck;
     protected Holiday holiday;
 
-    public Employee(String name, String role, int vacationDays) {
+    public Employee(String name, RoleType role, int vacationDays) {
         this.name = name;
         this.role = role;
         this.vacationDays = vacationDays;
@@ -18,11 +18,13 @@ public abstract class Employee {
         this.holiday = new Holiday();
     }
 
+    public abstract void createPaycheck();
+
     public String getName() {
         return name;
     }
 
-    public String getRole() {
+    public RoleType getRole() {
         return role;
     }
 
@@ -34,31 +36,28 @@ public abstract class Employee {
         this.vacationDays = vacationDays;
     }
 
-    public abstract void createPaycheck();
-
     public Paycheck getPaycheck() {
         return this.paycheck;
     }
 
-    public Boolean pacheckIsPending() {
-        return this.paycheck.isPending;
+    public Boolean paycheckIsPending() {
+        return this.paycheck.isPending();
     }
 
-    public void takesHoliday(Boolean payout, Integer amount){
-        //Optional.ofNullable(amount).isEmpty().
-        if(!payout && this.vacationDays < amount){
-            throw new RuntimeException("not enough vacation day");
-        }
-        this.holiday.set(payout, amount);
+    public void processPaycheck() { this.paycheck.process(); }
+
+    public void takesPayedHoliday() throws NotEnoughDayException {
+        vacationDaysValidation(DAYS_PAYEDOUT);
+        this.holiday.setPayedOutHoliday();
+        this.holiday.set(DAYS_PAYEDOUT);
+        this.createPaycheck();
     }
 
-    public void processPaycheck() {
-        if(this.paycheck.isPending){
-            System.out.println("Sending" + paycheck.getAmount() + "$ to " + this.getName());
-            this.paycheck.resetIsPending();
-        }
+    public void takesHoliday(Integer numberOfDays) throws NotEnoughDayException {
+        vacationDaysValidation(numberOfDays);
+        this.holiday.set(numberOfDays);
+        this.createPaycheck();
     }
-
 
     @Override
     public String toString() {
@@ -67,5 +66,11 @@ public abstract class Employee {
                 ", role='" + role + '\'' +
                 ", vacation_days=" + vacationDays +
                 '}';
+    }
+
+    private void vacationDaysValidation(Integer numberOfDays) throws NotEnoughDayException {
+        if(this.vacationDays < numberOfDays){
+            throw new NotEnoughDayException(this.name);
+        }
     }
 }

@@ -8,7 +8,7 @@ public interface EmployeeRepo {
 
 	public Boolean isPresent(Employee employee);
 
-	public List<Employee> findBy(String role);
+	public List<Employee> findBy(RoleType role);
 
 	public void save(Employee employee);
 
