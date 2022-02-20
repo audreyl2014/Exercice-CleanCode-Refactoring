@@ -32,10 +32,10 @@ public class SalariedEmployee extends Employee {
         }
     }
 
-    @Override
-    public void takesHoliday(Boolean payout, int amount) {
+   /* @Override
+    public void takesHoliday(Boolean payout, Integer amount) {
 
-    }
+    }*/
 
     @Override
     public String toString() {

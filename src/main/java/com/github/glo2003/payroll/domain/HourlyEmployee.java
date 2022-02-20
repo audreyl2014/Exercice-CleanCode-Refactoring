@@ -28,6 +28,7 @@ public class HourlyEmployee extends Employee {
         /*if (!payout && e.getVacationDays() < amount) { // cannot
             throw new RuntimeException("error");
         }*/
+       // if(this.pacheckIsPending()) { return;}
         if(!this.holiday.isTakingHoliday) {
             this.paycheck.createPending(this.amount * this.rate);
         }else if(this.holiday.isPayout()) {
@@ -36,11 +37,6 @@ public class HourlyEmployee extends Employee {
         }else {
             this.setVacationDays(this.getVacationDays() - this.holiday.getAmount());
         }
-    }
-
-    @Override
-    public void takesHoliday(Boolean payout, int amount) {
-        this.holiday.set(payout, amount);
     }
 
     @Override

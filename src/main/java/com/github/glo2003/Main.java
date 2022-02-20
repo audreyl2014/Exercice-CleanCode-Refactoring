@@ -41,7 +41,7 @@ public class Main {
         System.out.println("\n----- Pay statistics -----");
         float t = companyPayroll.getTotalmoney();
         System.out.println("Total money spent: ");
-        float avg = companyPayroll.avgPayCehck_pending();
+        float avg = companyPayroll.avgPaycheckPending();
         System.out.println("Average paycheck: " + avg);
 
         System.out.println("\n----- Pay -----");

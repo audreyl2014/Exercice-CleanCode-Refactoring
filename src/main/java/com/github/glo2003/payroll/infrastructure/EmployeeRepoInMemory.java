@@ -33,4 +33,19 @@ public class EmployeeRepoInMemory implements EmployeeRepo {
 		return employeesByRole;
 	}
 
+	@Override
+	public void save(Employee employee) {
+		this.employees.add(employee);
+	}
+
+	@Override
+	public void update(Employee employee, Employee updatedEmployee) {
+		this.employees.set(this.employees.indexOf(employee), updatedEmployee);
+	}
+
+	@Override
+	public void delete(Employee employee) {
+
+	}
+
 }

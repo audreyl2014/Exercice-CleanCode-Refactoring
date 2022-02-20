@@ -1,6 +1,8 @@
 package com.github.glo2003.payroll.domain;
 
 
+import java.util.Optional;
+
 public abstract class Employee {
     private String name;
     private String role;
@@ -12,7 +14,7 @@ public abstract class Employee {
         this.name = name;
         this.role = role;
         this.vacationDays = vacationDays;
-        this.paycheck = new Paycheck();
+        this.paycheck = new Paycheck(this.name);
         this.holiday = new Holiday();
     }
 
@@ -34,7 +36,16 @@ public abstract class Employee {
 
     public abstract void createPaycheck();
 
-    public void takesHoliday(Boolean payout, int amount){
+    public Paycheck getPaycheck() {
+        return this.paycheck;
+    }
+
+    public Boolean pacheckIsPending() {
+        return this.paycheck.isPending;
+    }
+
+    public void takesHoliday(Boolean payout, Integer amount){
+        //Optional.ofNullable(amount).isEmpty().
         if(!payout && this.vacationDays < amount){
             throw new RuntimeException("not enough vacation day");
         }

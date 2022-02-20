@@ -9,6 +9,7 @@ import com.github.glo2003.payroll.infrastructure.EmployeeRepoInMemory;
 import com.github.glo2003.payroll.service.ListEmployeeService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //// Company class
 public class CompanyPayroll {
@@ -29,15 +30,33 @@ private List<Boolean> holidays; // who takes holidays
     }
 
     public void processPending() {
-        employees.forEach(Employee::processPaycheck);
+        employeeRepo.findAll().forEach(Employee::processPaycheck);
     }
 
     public void createPending() {
-        employees.forEach(Employee::createPaycheck);
+        employeeRepo.findAll().forEach(Employee::createPaycheck);
+    }
+
+    public List<Paycheck> getPendings() {
+        List<Paycheck> paychecks = new ArrayList<>();
+        this.employeeRepo.findAll().stream().forEach(employee -> {
+            if(employee.pacheckIsPending()){
+                paychecks.add(employee.getPaycheck());
+            }
+        });
+        return paychecks;
+    }
+
+    public void takeHoliday(Employee employee, boolean payout, Integer amount) {
+        if (!employeeRepo.isPresent(employee)) {
+            throw new RuntimeException("not here");
+        }
+        employee.takesHoliday(payout, amount);
+        employee.createPaycheck();
     }
 
     public void addEmployee(Employee employee) {
-        employees.add(employee);
+        employeeRepo.findAll().add(employee);
     }
 
     public void listEmployees() {
@@ -48,11 +67,11 @@ private List<Boolean> holidays; // who takes holidays
         return employeeRepo.findBy("vp");
     }
 
-    public List<Employee> findManagers() { // find managers
+    public List<Employee> findManagers() {
         return employeeRepo.findBy("manager");
     }
 
-    public List<Employee> findSoftwarEngineer() {
+    public List<Employee> findSoftwareEngineer() {
         return employeeRepo.findBy("engineer");
     }
 
@@ -80,51 +99,18 @@ private List<Boolean> holidays; // who takes holidays
         }
     }
 
-    public void takeHoliday(Employee e, boolean payout, Integer amount) {
-
-
-        // TODO this could probably be split in two methods...
-        if (!this.employees.contains(e)) {
-            throw new RuntimeException("not here");
-        }
-
-    int i = this.employees.indexOf(e);
-        if (e instanceof HourlyEmployee) {
-        if (!holidays.contains(e))
-        holidays.set(i, true);
-        } else if (e instanceof SalariedEmployee) {
-        if (!holidays.contains(e))
-        holidays.set(i, true);
-        } else {
-        throw new RuntimeException("something happened");
-        }
-    }
-
     ///Statistics
-    public float avgPayCehck_pending() {
-        float out_float;
-        if (this.paychecks.size() == 0) {
+    public float avgPaycheckPending() {
+        List<Paycheck> pendingPaychecks = getPendings();
+        float out_float = (float) pendingPaychecks.stream().mapToDouble(p -> p.getAmount()).sum();
+
+        /*if (this.paychecks.size() == 0) {
             return -1f;
-        }
-        float t_float = 0.f;
-        for (int o = 0; o < this.paychecks.size(); o = o + 1) {
-            Paycheck p = this.paychecks.get(o);
-            t_float += p.getAmount();
-        }
-        out_float = t_float / this.paychecks.size();
+        }*/
+        float t_float = getTotalmoney();
+           out_float = t_float / this.employeeRepo.findAll().size();
         return out_float;
     }
-
-
-    public float getTotalmoney() {
-        float t_float = 0.f;
-        for (int o = 0; o < this.paychecks.size(); o = o + 1) {
-            Paycheck p = this.paychecks.get(o);
-            t_float += p.getAmount();
-        }
-        return t_float;
-    }
-
 
     public int getNumEholidays() {
         int i_int = 0;
@@ -134,8 +120,11 @@ private List<Boolean> holidays; // who takes holidays
         return i_int;
     }
 
-    public List<Paycheck> getPendings() {
-        return this.paychecks;
+    public float getTotalmoney() {
+        List<Paycheck> paychecks = new ArrayList<>();
+        this.employeeRepo.findAll().stream().forEach(employee -> {
+            paychecks.add(employee.getPaycheck());
+        });
+        return (float) paychecks.stream().mapToDouble(p -> p.getAmount()).sum();
     }
-
 }

@@ -5,8 +5,8 @@ public class Paycheck {
     private float amount;
     protected Boolean isPending;
 
-    public Paycheck() {
-        this.to = to;
+    public Paycheck(String name) {
+        this.to = name;
         this.amount = amount;
         this.isPending = false;
     }
@@ -31,5 +31,9 @@ public class Paycheck {
     public void createPending(Float amount) {
         this.amount = amount;
         this.isPending = true;
+    }
+
+    public Boolean isPending() {
+        return isPending;
     }
 }

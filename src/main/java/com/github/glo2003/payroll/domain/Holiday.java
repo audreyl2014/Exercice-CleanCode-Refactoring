@@ -12,10 +12,11 @@ public class Holiday {
 		this.payout = false;
 		this.isTakingHoliday = false;
 	}
-	public  void set(Boolean payout, int amount) {
+	public  void set(Boolean payout, Integer amount) {
 		validateHoliday(payout, amount);
 		this.payout = payout;
 		this.amount = (payout ? 5: amount);
+		this.isTakingHoliday=true;
 	}
 
 	void reset() {
@@ -33,9 +34,15 @@ public class Holiday {
 
 	private void validateHoliday(Boolean payout, Integer amountToValidate) {
 		if (payout) {
-			Optional.ofNullable(amountToValidate).orElseThrow( RuntimeException::new);//("amount must be null"); todo meilleur exception
+			//Optional.ofNullable(amountToValidate).orElseThrow( RuntimeException::new);
+			if(amountToValidate != null) {
+				throw new RuntimeException("bad input");//("amount must be null");
+			} //todo meilleur exception
 		} else {
-			Optional.of(amountToValidate).orElseThrow( RuntimeException::new);//("amount must be set")); todo meilleur exception
+			if(amountToValidate == null){
+				throw new RuntimeException("bad input");
+			}
+			//Optional.of(amountToValidate).orElseThrow( RuntimeException::new);//("amount must be set")); todo meilleur exception
 		}
 	}
 }
